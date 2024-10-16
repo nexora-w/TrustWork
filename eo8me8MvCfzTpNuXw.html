@@ -1,0 +1,913 @@
+<html><head><base href="https://app.pinetwork.com/"><title>MusicBox - Powered by Audius</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --background: #8A2BE2;
+    --text: #FFFFFF; 
+    --card-bg: #9932CC; 
+    --shadow-light: #B23AEE; 
+    --shadow-dark: #68228B; 
+    --accent: #7e1bcc;
+    --accent-light: #9b30ff;
+    --yellow: #FFD700;
+    --violet: #8A2BE2;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    padding-top: 20px; 
+    padding-bottom: 100px; 
+  }
+  header {
+    background: linear-gradient(to right, #FF9800, var(--yellow)); 
+    color: #FFFFFF; 
+    text-align: left;
+    padding: 0.5em 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0; 
+    z-index: 900;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    font-size: 1.2em;
+    margin: 0;
+  }
+  header p {
+    font-size: 0.8em;
+    margin: 0;
+  }
+  #user-button {
+    font-size: 0.9em;
+    padding: 8px 16px;
+  }
+  main {
+    max-width: 100%;
+    padding: 1em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1em;
+  }
+  .card {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1em;
+  }
+  .music-player {
+    grid-column: 1 / -1;
+  }
+  .pi-button {
+    background: linear-gradient(145deg, var(--yellow), #ff9800);
+    color: #000000; 
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 
+      6px 6px 12px var(--shadow-dark), 
+      -6px -6px 12px var(--shadow-light),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.3),
+      inset -1px -1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .pi-button:hover {
+    background: linear-gradient(145deg, #ffb74d, var(--violet)); 
+    color: #FFFFFF;
+    box-shadow: 
+      4px 4px 8px var(--shadow-dark), 
+      -4px -4px 8px var(--shadow-light),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.3),
+      inset -1px -1px 2px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+  .pi-button:active {
+    background: linear-gradient(145deg, #ff9800, var(--yellow)); 
+    box-shadow: 
+      2px 2px 4px var(--shadow-dark), 
+      -2px -2px 4px var(--shadow-light),
+      inset 2px 2px 4px rgba(0, 0, 0, 0.2),
+      inset -2px -2px 4px rgba(255, 255, 255, 0.2);
+    transform: translateY(1px);
+  }
+  #floating-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to right, #9932CC, var(--violet)); 
+    padding: 0.5em 1em; 
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); 
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #FFFFFF; 
+  }
+  #floating-player #now-playing {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    flex: 1;
+  }
+  #floating-player #now-playing img {
+    width: 30px; 
+    height: 30px;
+    margin-right: 10px;
+  }
+  #floating-player #now-playing h3 {
+    font-size: 0.7em; 
+    margin: 0;
+  }
+  #floating-player #now-playing p {
+    font-size: 0.6em; 
+    margin: 0;
+  }
+  #floating-player #player-controls {
+    display: flex;
+    flex-direction: row; 
+    gap: 5px; 
+  }
+  #floating-player #player-controls .pi-button {
+    padding: 4px 8px; 
+    font-size: 0.7em; 
+  }
+  #floating-player #audio-player {
+    height: 20px; 
+    width: 100%;
+    max-width: none;
+  }
+  #playlist {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  #playlist li {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  #playlist li:hover {
+    background-color: #f0f0f0;
+  }
+  #playlist li img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  #search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  #search-button {
+    width: 100%;
+    max-width: 300px;
+  }
+  #genre-select {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    background: linear-gradient(145deg, var(--yellow), #ff9800);
+    color: #000000;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+  }
+  #genre-select:hover {
+    background: linear-gradient(145deg, #ffb74d, #FF4500);
+  }
+  .platform-explanation {
+    grid-column: span 2;
+    text-align: center;
+  }
+  .platform-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .platform-logos img {
+    width: 100px;
+    margin: 0 20px;
+  }
+  .random-images {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .random-images img {
+    margin: 10px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: var(--card-bg);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 500px;
+    color: var(--text);
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #load-more-btn {
+    display: none;
+    margin-top: 20px;
+    width: 100%;
+  }
+  #user-list {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  #user-list li {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  #user-list li:hover {
+    background-color: var(--accent-light);
+  }
+  #user-list li img {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    margin-right: 10px;
+  }
+  #user-search-container {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  #user-search-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 25px 0 0 25px;
+    font-size: 14px;
+  }
+  #user-search-button {
+    border-radius: 0 25px 25px 0;
+  }
+  @media (max-width: 768px) {
+    main {
+      grid-template-columns: 1fr;
+    }
+    .card {
+      margin-bottom: 1em;
+    }
+  }
+  @media (max-width: 414px) { 
+    header {
+      padding: 0.5em;
+    }
+    
+    header h1 {
+      font-size: 1em;
+    }
+    
+    header p {
+      font-size: 0.7em;
+    }
+    
+    #user-button {
+      font-size: 0.8em;
+      padding: 6px 12px;
+    }
+    
+    main {
+      padding: 0.5em;
+    }
+    
+    .card {
+      padding: 0.5em;
+    }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>MusicBox</h1>
+      <p>Powered by Audius</p>
+    </div>
+    <button class="pi-button" id="user-button">User</button>
+  </header>
+  <main>
+    <div class="card music-player">
+      <h2>Music Player</h2>
+      <div id="search-container">
+        <button class="pi-button" id="search-button">Search Tracks</button>
+        <select id="genre-select" class="genre-select">
+          <option value="">Select a genre</option>
+          <option value="Favorites">Favorites</option>
+        </select>
+      </div>
+      <h3 id="playlist-heading">Trending Tracks</h3>
+      <ul id="playlist"></ul>
+      <button class="pi-button" id="load-more-btn">Load More</button>
+    </div>
+    <div class="card">
+      <h2>Music Integration</h2>
+      <p>Earn Pi while enjoying your favorite music!</p>
+      <p>We also accept Pi donations to support our platform.</p>
+      <button class="pi-button" id="connect-wallet">Connect Pi Wallet</button>
+      <button class="pi-button" id="donate-pi">Donate Pi</button>
+      <p>Pi earned this session: <span id="pi-earned">0</span></p>
+      <div id="rewards-info"></div>
+    </div>
+    <div class="card">
+      <h2>Your Music Stats</h2>
+      <p>Total listening time: <span id="total-time">0 minutes</span></p>
+      <p>Favorite genre: <span id="favorite-genre">Not enough data</span></p>
+      <p>Tracks in favorites: <span id="favorites-count">0</span></p>
+      <button class="pi-button" id="view-favorites">View Favorites</button>
+    </div>
+    <div class="card">
+      <h2>Audius Users</h2>
+      <div id="user-search-container">
+        <input type="text" id="user-search-input" placeholder="Search Audius users">
+        <button class="pi-button" id="user-search-button">Search Users</button>
+      </div>
+      <ul id="user-list"></ul>
+      <button class="pi-button" id="load-more-users-btn" style="display: none;">Load More Users</button>
+    </div>
+    <div class="card platform-explanation">
+      <h2>About MusicBox</h2>
+      <p>Welcome to the future of decentralized music streaming! MusicBox combines the power of PiNetwork's cryptocurrency ecosystem with Audius' decentralized music streaming platform. Here's what makes us unique:</p>
+      <ul>
+        <li>Earn Pi cryptocurrency while listening to your favorite tracks</li>
+        <li>Discover new artists and support them directly</li>
+        <li>Enjoy a vast library of music from independent artists</li>
+        <li>Experience seamless integration between blockchain and music streaming</li>
+        <li>We accept donations in Pi cryptocurrency to support our platform</li>
+      </ul>
+      <div class="platform-logos">
+        <img src="https://app.pinetwork.com/images/pi-logo.png" alt="PiNetwork Logo" width="100" height="100">
+        <img src="https://app.pinetwork.com/images/audius-logo.png" alt="Audius Logo" width="100" height="100">
+        <img src="https://app.pinetwork.com/images/donation-logo.png" alt="Pi Donation Logo" width="100" height="100">
+      </div>
+      <div class="random-images">
+        <img id="random-image-1" alt="Robot/AI image 1" width="200" height="200">
+        <img id="random-image-2" alt="Robot/AI image 2" width="200" height="200">
+        <img id="random-image-3" alt="Robot/AI image 3" width="200" height="200">
+      </div>
+    </div>
+  </main>
+  <div id="floating-player">
+    <div id="now-playing">
+      <img id="track-image" src="https://app.pinetwork.com/images/default-album-art.png" alt="Album art">
+      <div>
+        <h3>Now playing:</h3>
+        <p id="track-name">No track selected</p>
+        <p id="artist-name"></p>
+      </div>
+    </div>
+    <div id="player-controls">
+      <button class="pi-button" id="play-pause">Play</button>
+      <button class="pi-button" id="next-track">Next Track</button>
+      <button class="pi-button" id="add-favorite">Add to Favorites</button>
+    </div>
+    <audio id="audio-player" controls style="height: 20px; width: 100%; max-width: 200px; background-color: var(--violet);"></audio>
+  </div>
+  <div id="user-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="login-form">
+        <h2>Login / Sign Up</h2>
+        <input type="text" id="username-input" placeholder="Username">
+        <input type="password" id="password-input" placeholder="Password">
+        <button class="pi-button" id="login-button">Login</button>
+        <button class="pi-button" id="signup-button">Sign Up</button>
+      </div>
+      <div id="user-profile" style="display: none;">
+        <h2>User Profile</h2>
+        <p>Username: <span id="profile-username"></span></p>
+        <p>Favorite Tracks: <span id="profile-favorites"></span></p>
+        <p>Total Listening Time: <span id="profile-listening-time"></span></p>
+        <button class="pi-button" id="logout-button">Logout</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true });
+    const AUDIUS_API_HOST = 'https://discovery-us-01.audius.openplayer.org';
+    let isPlaying = false;
+    let piEarned = 0;
+    let playTime = 0;
+    let currentTrack = null;
+    let playlist = [];
+    let favorites = [];
+    let totalListeningTime = 0;
+    let genreStats = {};
+    let currentUser = null;
+    let currentOffset = 0;
+    const limit = 10;
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadMoreUsersBtn = document.getElementById('load-more-users-btn');
+    const playPauseBtn = document.querySelector('#floating-player #play-pause');
+    const nextTrackBtn = document.querySelector('#floating-player #next-track');
+    const addFavoriteBtn = document.querySelector('#floating-player #add-favorite');
+    const trackNameSpan = document.querySelector('#floating-player #track-name');
+    const artistNameSpan = document.querySelector('#floating-player #artist-name');
+    const trackImage = document.querySelector('#floating-player #track-image');
+    const audioPlayer = document.querySelector('#floating-player #audio-player');
+    const userSearchInput = document.getElementById('user-search-input');
+    const userSearchButton = document.getElementById('user-search-button');
+    const userList = document.getElementById('user-list');
+    const piEarnedSpan = document.getElementById('pi-earned');
+    const connectWalletBtn = document.getElementById('connect-wallet');
+    const donatePiBtn = document.getElementById('donate-pi');
+    const playlistElement = document.getElementById('playlist');
+    const searchButton = document.getElementById('search-button');
+    const genreSelect = document.getElementById('genre-select');
+    const totalTimeSpan = document.getElementById('total-time');
+    const favoriteGenreSpan = document.getElementById('favorite-genre');
+    const favoritesCountSpan = document.getElementById('favorites-count');
+    const viewFavoritesBtn = document.getElementById('view-favorites');
+    const userButton = document.getElementById('user-button');
+    const userModal = document.getElementById('user-modal');
+    const closeModal = userModal.querySelector('.close');
+    const loginForm = document.getElementById('login-form');
+    const userProfile = document.getElementById('user-profile');
+    const usernameInput = document.getElementById('username-input');
+    const passwordInput = document.getElementById('password-input');
+    const loginButton = document.getElementById('login-button');
+    const signupButton = document.getElementById('signup-button');
+    const logoutButton = document.getElementById('logout-button');
+    const profileUsername = document.getElementById('profile-username');
+    const profileFavorites = document.getElementById('profile-favorites');
+    const profileListeningTime = document.getElementById('profile-listening-time');
+    const genres = [
+      "Favorites", "Trending", "Audiobooks", "Electronic", "Rock", "Metal", "Alternative", "Hip-Hop/Rap", "Experimental", "Punk", "Folk", "Pop", "Ambient",
+      "Soundtrack", "World", "Jazz", "Acoustic", "Funk", "R&B/Soul", "Instrumental", "House", "Techno", "Classical", "Country", "Reggae",
+      "Blues", "Indie", "Dance", "Latin", "Singer-Songwriter", "Trap", "Drum & Bass", "Trance", "Dubstep", "Disco"
+    ];
+    let lastSearchQuery = '';
+    let userSearchQuery = '';
+    let userSearchOffset = 0;
+    const userSearchLimit = 10;
+    userButton.addEventListener('click', openUserModal);
+    closeModal.addEventListener('click', closeUserModal);
+    loginButton.addEventListener('click', loginUser);
+    signupButton.addEventListener('click', signupUser);
+    logoutButton.addEventListener('click', logoutUser);
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    nextTrackBtn.addEventListener('click', playNextTrack);
+    addFavoriteBtn.addEventListener('click', addToFavorites);
+    connectWalletBtn.addEventListener('click', connectPiWallet);
+    donatePiBtn.addEventListener('click', donatePi);
+    searchButton.addEventListener('click', () => {
+      const searchQuery = prompt("Enter your search query:");
+      if (searchQuery) {
+        searchTracks(searchQuery);
+      }
+    });
+    userSearchButton.addEventListener('click', () => searchAudiusUsers());
+    loadMoreUsersBtn.addEventListener('click', loadMoreUsers);
+    genreSelect.addEventListener('change', (event) => {
+      const selectedGenre = event.target.value;
+      if (selectedGenre === 'Trending') {
+        fetchTrendingTracks();
+      } else if (selectedGenre === 'Audiobooks') {
+        fetchAudiobooks();
+      } else if (selectedGenre === 'Favorites') {
+        displayFavorites();
+      } else if (selectedGenre) {
+        searchTracks(selectedGenre);
+      }
+    });
+    audioPlayer.addEventListener('ended', playNextTrack);
+    audioPlayer.addEventListener('error', (e) => {
+      console.error('Audio playback error:', e);
+      alert('There was an error playing this track. Please try another.');
+      playNextTrack();
+    });
+    viewFavoritesBtn.addEventListener('click', displayFavorites);
+    loadMoreBtn.addEventListener('click', loadMoreTracks);
+    function loadRandomImages() {
+      const imageUrls = [
+        'https://app.pinetwork.com/images/robot-ai-1.jpg',
+        'https://app.pinetwork.com/images/robot-ai-2.jpg',
+        'https://app.pinetwork.com/images/robot-ai-3.jpg',
+        'https://app.pinetwork.com/images/robot-ai-4.jpg',
+        'https://app.pinetwork.com/images/robot-ai-5.jpg',
+        'https://app.pinetwork.com/images/robot-ai-6.jpg'
+      ];
+
+      const randomImage1 = document.getElementById('random-image-1');
+      const randomImage2 = document.getElementById('random-image-2');
+      const randomImage3 = document.getElementById('random-image-3');
+
+      function getRandomImage() {
+        return imageUrls[Math.floor(Math.random() * imageUrls.length)];
+      }
+
+      randomImage1.src = getRandomImage();
+      randomImage2.src = getRandomImage();
+      randomImage3.src = getRandomImage();
+    }
+    async function loadMoreTracks() {
+      if (lastSearchQuery) {
+        try {
+          const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/search?query=${encodeURIComponent(lastSearchQuery)}&app_name=MusicBox&limit=${limit}&offset=${currentOffset}`);
+          const data = await response.json();
+          playlist = [...playlist, ...data.data];
+          displayPlaylist();
+          currentOffset += limit;
+          if (data.data.length < limit) {
+            loadMoreBtn.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error loading more tracks:', error);
+          alert('Failed to load more tracks. Please try again.');
+        }
+      } else if (genreSelect.value === 'Trending') {
+        try {
+          const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/trending?app_name=MusicBox&time=week&limit=${limit}&offset=${currentOffset}`);
+          const data = await response.json();
+          playlist = [...playlist, ...data.data];
+          displayPlaylist();
+          currentOffset += limit;
+          if (data.data.length < limit) {
+            loadMoreBtn.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error loading more trending tracks:', error);
+          alert('Failed to load more trending tracks. Please try again.');
+        }
+      } else if (genreSelect.value === 'Audiobooks') {
+        try {
+          const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/search?query=audiobook&app_name=MusicBox&limit=${limit}&offset=${currentOffset}`);
+          const data = await response.json();
+          playlist = [...playlist, ...data.data];
+          displayPlaylist();
+          currentOffset += limit;
+          if (data.data.length < limit) {
+            loadMoreBtn.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error loading more audiobooks:', error);
+          alert('Failed to load more audiobooks. Please try again.');
+        }
+      }
+    }
+    async function connectPiWallet() {
+      try {
+        const scopes = ['username', 'payments'];
+        const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
+        if (authResult.user) {
+          alert(`Connected to Pi Network. Welcome, ${authResult.user.username}!`);
+        }
+      } catch (error) {
+        console.error('Error connecting to Pi Wallet:', error);
+        alert('Failed to connect to Pi Wallet. Please try again.');
+      }
+    }
+    function onIncompletePaymentFound(payment) {
+      console.log('Incomplete payment found:', payment);
+    }
+    async function fetchTrendingTracks() {
+      try {
+        const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/trending?app_name=MusicBox&time=week&limit=${limit}`);
+        const data = await response.json();
+        playlist = data.data;
+        displayPlaylist();
+        lastSearchQuery = '';
+        currentOffset = limit;
+        loadMoreBtn.style.display = 'block';
+      } catch (error) {
+        console.error('Error fetching trending tracks:', error);
+        alert('Failed to fetch trending tracks. Please try again.');
+      }
+    }
+    async function fetchAudiobooks() {
+      try {
+        const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/search?query=audiobook&app_name=MusicBox&limit=${limit}`);
+        const data = await response.json();
+        playlist = data.data;
+        displayPlaylist();
+        lastSearchQuery = '';
+        currentOffset = limit;
+        loadMoreBtn.style.display = 'block';
+      } catch (error) {
+        console.error('Error fetching audiobooks:', error);
+        alert('Failed to fetch audiobooks. Please try again.');
+      }
+    }
+    async function searchAudiusUsers(offset = 0) {
+      const query = userSearchInput.value.trim();
+      if (!query) return;
+
+      try {
+        const response = await fetch(`${AUDIUS_API_HOST}/v1/users/search?query=${encodeURIComponent(query)}&app_name=MusicBox&limit=${userSearchLimit}&offset=${offset}`);
+        const data = await response.json();
+        
+        if (offset === 0) {
+          userList.innerHTML = '';
+          userSearchQuery = query;
+          userSearchOffset = userSearchLimit;
+        } else {
+          userSearchOffset += userSearchLimit;
+        }
+
+        displayAudiusUsers(data.data);
+
+        loadMoreUsersBtn.style.display = data.data.length === userSearchLimit ? 'block' : 'none';
+      } catch (error) {
+        console.error('Error searching Audius users:', error);
+        alert('Failed to search Audius users. Please try again.');
+      }
+    }
+    // Update the showUserProfile function
+    function showUserProfile(user) {
+      fetchUserTracks(user.id);
+    }
+    // Add a new function to fetch user tracks
+    async function fetchUserTracks(userId) {
+      try {
+        const response = await fetch(`${AUDIUS_API_HOST}/v1/users/${userId}/tracks?app_name=MusicBox&limit=${limit}`);
+        const data = await response.json();
+        playlist = data.data;
+        displayPlaylist();
+        const playlistHeading = document.getElementById('playlist-heading');
+        playlistHeading.textContent = `Tracks by ${data.data[0].user.name}`;
+        lastSearchQuery = '';
+        currentOffset = limit;
+        loadMoreBtn.style.display = 'block';
+      } catch (error) {
+        console.error('Error fetching user tracks:', error);
+        alert('Failed to fetch user tracks. Please try again.');
+      }
+    }
+    // Modify the displayAudiusUsers function
+    function displayAudiusUsers(users) {
+      userList.innerHTML = '';
+      users.forEach(user => {
+        const li = document.createElement('li');
+        const img = document.createElement('img');
+        img.src = user.profile_picture ? user.profile_picture['150x150'] : 'https://app.pinetwork.com/images/default-profile-picture.png';
+        img.alt = `${user.name} profile picture`;
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${user.name}</strong><br>Followers: ${user.follower_count}`;
+        li.appendChild(img);
+        li.appendChild(info);
+        li.onclick = () => showUserProfile(user);
+        userList.appendChild(li);
+      });
+    }
+    // Update the loadMoreUsers function to use the current user search query
+    function loadMoreUsers() {
+      searchAudiusUsers(userSearchOffset);
+    }
+    window.onload = () => {
+      fetchTrendingTracks();
+      loadRandomImages();
+      populateGenreSelect();
+    };
+    window.onclick = function(event) {
+      if (event.target == userModal) {
+        closeUserModal();
+      }
+    }
+    function populateGenreSelect() {
+      genreSelect.innerHTML = '<option value="">Select a genre</option>';
+      genres.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre;
+        option.textContent = genre;
+        genreSelect.appendChild(option);
+      });
+    }
+    function displayPlaylist() {
+      const playlistHeading = document.getElementById('playlist-heading');
+      if (lastSearchQuery) {
+        playlistHeading.textContent = `Search Results for "${lastSearchQuery}"`;
+      } else if (genreSelect.value === 'Trending') {
+        playlistHeading.textContent = 'Trending Tracks';
+      } else if (genreSelect.value === 'Audiobooks') {
+        playlistHeading.textContent = 'Audiobooks';
+      } else if (genreSelect.value === 'Favorites') {
+        playlistHeading.textContent = 'Your Favorites';
+      } else {
+        playlistHeading.textContent = `${genreSelect.value} Tracks`;
+      }
+      
+      playlistElement.innerHTML = '';
+      playlist.forEach(track => {
+        const li = document.createElement('li');
+        const img = document.createElement('img');
+        img.src = track.artwork ? track.artwork['150x150'] : 'https://app.pinetwork.com/images/default-album-art.png';
+        img.alt = `${track.title} artwork`;
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${track.title}</strong><br>${track.user.name}`;
+        li.appendChild(img);
+        li.appendChild(info);
+        li.onclick = () => playTrack(track);
+        playlistElement.appendChild(li);
+      });
+    }
+    function playTrack(track) {
+      currentTrack = track;
+      audioPlayer.src = `${AUDIUS_API_HOST}/v1/tracks/${track.id}/stream?app_name=MusicBox`;
+      trackNameSpan.textContent = track.title;
+      artistNameSpan.textContent = track.user.name;
+      trackImage.src = track.artwork ? track.artwork['150x150'] : 'https://app.pinetwork.com/images/default-album-art.png';
+      
+      safePlay(audioPlayer);
+      isPlaying = true;
+      playPauseBtn.textContent = 'Pause';
+  
+      const genre = track.genre || 'Unknown';
+      genreStats[genre] = (genreStats[genre] || 0) + 1;
+      updateMusicStats();
+    }
+    
+    function updateMusicStats() {
+      totalTimeSpan.textContent = `${Math.floor(totalListeningTime / 60)} minutes`;
+      favoritesCountSpan.textContent = favorites.length;
+      
+      let favoriteGenre = 'Not enough data';
+      let maxPlays = 0;
+      for (const [genre, plays] of Object.entries(genreStats)) {
+        if (plays > maxPlays) {
+          favoriteGenre = genre;
+          maxPlays = plays;
+        }
+      }
+      favoriteGenreSpan.textContent = favoriteGenre;
+    }
+
+    setInterval(() => {
+      if (isPlaying) {
+        totalListeningTime += 1;
+        playTime += 1;
+        if (playTime >= 60) {
+          piEarned += 0.1;
+          playTime = 0;
+          piEarnedSpan.textContent = piEarned.toFixed(2);
+        }
+        updateMusicStats();
+      }
+    }, 1000);
+
+    function togglePlayPause() {
+      if (audioPlayer.src) {
+        if (isPlaying) {
+          audioPlayer.pause();
+        } else {
+          safePlay(audioPlayer);
+        }
+        isPlaying = !isPlaying;
+        playPauseBtn.textContent = isPlaying ? 'Pause' : 'Play';
+      }
+    }
+    function playNextTrack() {
+      const currentIndex = playlist.findIndex(track => track.id === currentTrack?.id);
+      if (currentIndex > -1 && currentIndex < playlist.length - 1) {
+        playTrack(playlist[currentIndex + 1]);
+      } else if (playlist.length > 0) {
+        playTrack(playlist[0]);
+      } else {
+        audioPlayer.src = '';
+        trackNameSpan.textContent = 'No track selected';
+        artistNameSpan.textContent = '';
+        trackImage.src = 'https://app.pinetwork.com/images/default-album-art.png';
+        isPlaying = false;
+        playPauseBtn.textContent = 'Play';
+      }
+    }
+    function safePlay(audioElement) {
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+        }).catch(error => {
+          console.log("Playback was prevented or there was an error:", error);
+        });
+      }
+    }
+    function openUserModal() {
+      userModal.style.display = 'block';
+      updateUserModalContent();
+    }
+    function closeUserModal() {
+      userModal.style.display = 'none';
+    }
+    function updateUserModalContent() {
+      if (currentUser) {
+        loginForm.style.display = 'none';
+        userProfile.style.display = 'block';
+        profileUsername.textContent = currentUser.username;
+        profileFavorites.textContent = favorites.length;
+        profileListeningTime.textContent = `${Math.floor(totalListeningTime / 60)} minutes`;
+      } else {
+        loginForm.style.display = 'block';
+        userProfile.style.display = 'none';
+      }
+    }
+    function addToFavorites() {
+      if (currentTrack && !favorites.some(fav => fav.id === currentTrack.id)) {
+        favorites.push(currentTrack);
+        favoritesCountSpan.textContent = favorites.length;
+        alert(`Added "${currentTrack.title}" to favorites!`);
+      }
+    }
+    function displayFavorites() {
+      playlist = favorites;
+      const playlistHeading = document.getElementById('playlist-heading');
+      playlistHeading.textContent = 'Your Favorites';
+      displayPlaylist();
+      lastSearchQuery = '';
+      currentOffset = 0;
+      loadMoreBtn.style.display = 'none'; 
+    }
+    function loginUser() {
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      currentUser = { username: username };
+      updateUserModalContent();
+      alert(`Welcome, ${username}!`);
+    }
+    function signupUser() {
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      currentUser = { username: username };
+      updateUserModalContent();
+      alert(`Account created for ${username}!`);
+    }
+    function logoutUser() {
+      currentUser = null;
+      updateUserModalContent();
+      alert('You have been logged out.');
+    }
+    function donatePi() {
+      if (Pi.initialized) {
+        alert("Thank you for your interest in donating! This feature is coming soon.");
+      } else {
+        alert("Please connect your Pi Wallet first to make a donation.");
+      }
+    }
+    async function searchTracks(query) {
+      try {
+        const response = await fetch(`${AUDIUS_API_HOST}/v1/tracks/search?query=${encodeURIComponent(query)}&app_name=MusicBox&limit=${limit}`);
+        const data = await response.json();
+        playlist = data.data;
+        displayPlaylist();
+        lastSearchQuery = query;
+        currentOffset = limit;
+        loadMoreBtn.style.display = 'block';
+      } catch (error) {
+        console.error('Error searching tracks:', error);
+        alert('Failed to search tracks. Please try again.');
+      }
+    }
+  </script>
+</body></html>

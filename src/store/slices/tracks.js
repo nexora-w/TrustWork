@@ -7,10 +7,12 @@ const TracksSlice = createSlice({
   },
   reducers: {
     setTracks: (state, action) => {
-      state.tracks = action.payload
+      state.tracks = action.payload;      
+      console.log(state.tracks);  
     }
+    
   },
 });
 
-export const { increment, decrement } = TracksSlice.actions;
+export const { setTracks } = TracksSlice.actions;
 export default TracksSlice.reducer;

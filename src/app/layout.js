@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import ReduxPovider from "@/context/ReduxProvider";
+import PlaylistProvider from "@/context/PlaylistProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-[#181818]`}
       >
         <ReduxPovider>
-          {children}
+          <PlaylistProvider>
+            {children}
+          </PlaylistProvider>
         </ReduxPovider>
       </body>
     </html>

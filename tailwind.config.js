@@ -11,6 +11,15 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        topToBottom: {
+          '0%': { transform: 'translateX(-200%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        topToBottom: 'topToBottom 1s ease-in-out',
+      },
     },
   },
   plugins: [],

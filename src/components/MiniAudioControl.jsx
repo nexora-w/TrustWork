@@ -85,7 +85,7 @@ const MiniAudioControl = React.memo(() => {
               onMouseDown={() => { if (audioRef.current) audioRef.current.pause(); setIsPlaying(false); }} // Pause on mouse down
               onMouseUp={() => { if (audioRef.current) audioRef.current.play(); setIsPlaying(true); }} // Play on mouse up
             />
-            <div className="flex justify-between w-full mt-2">
+            <div className="flex justify-center items-center gap-3 w-full mt-2">
               <button
                 className="bg-gray-700 text-white rounded py-2 px-4"
                 onClick={handlePrevious}

@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { HeartTwoTone } from "@ant-design/icons";
+import Loading from "@/components/Loading";
 
 const Trending = () => {
   const playlist = useSelector((state) => state.tracks.demoTrack);
@@ -61,7 +62,9 @@ const Trending = () => {
                 </motion.div>
               ))
             ) : (
-              <div>Loading</div>
+                <div className="w-full h-[30vh] flex items-center justify-center">
+                    <Loading />
+                </div>
             )}
             <motion.button
               className="bg-[#1E1E1E] mx-auto lg:flex max-lg:text-center justify-start items-center gap-4 my-3 rounded-lg hover:bg-[#666666] cursor-pointer py-2 px-4 border border-[#5e5e5e]"

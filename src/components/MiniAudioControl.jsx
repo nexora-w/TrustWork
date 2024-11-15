@@ -2,7 +2,15 @@ import React, { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { nextTrack, previousTrack } from "../store/slices/tracks"; // Update path accordingly
-import { FastBackwardFilled, FastForwardFilled, PauseCircleFilled, PlayCircleFilled, RetweetOutlined, StarFilled, StarOutlined } from "@ant-design/icons"; // Import icons
+import {
+  FastBackwardFilled,
+  FastForwardFilled,
+  PauseCircleFilled,
+  PlayCircleFilled,
+  RetweetOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons"; // Import icons
 
 const MiniAudioControl = React.memo(() => {
   const dispatch = useDispatch();
@@ -19,9 +27,14 @@ const MiniAudioControl = React.memo(() => {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = `${AUDIUS_API_HOST}/v1/tracks/${currentTrack.id}/stream?app_name=MusicBox`;
+    }
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (audioRef.current) {
       isPlaying ? audioRef.current.play() : audioRef.current.pause();
     }
-  }, [currentTrack, isPlaying]);
+  }, [isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -74,7 +87,9 @@ const MiniAudioControl = React.memo(() => {
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
 
@@ -89,7 +104,7 @@ const MiniAudioControl = React.memo(() => {
   return (
     <>
       {currentTrack && (
-        <div className="fixed lg:bottom-5 bottom-0 right-1/2 translate-x-1/2 lg:right-5 lg:w-1/5 w-full bg-[#1d1d1d] p-4 rounded border">
+        <div className="fixed lg:bottom-5 bottom-0 right-1/2 max-lg:translate-x-1/2 lg:right-5 lg:w-1/5 w-full bg-[#1d1d1d] p-4 rounded border">
           <audio ref={audioRef} />
           <div className="flex flex-col items-center">
             <h3 className="text-lg">{currentTrack.title}</h3>
@@ -105,8 +120,12 @@ const MiniAudioControl = React.memo(() => {
               width={150}
             />
             <div className="flex justify-between w-full text-white">
-              <span className="text-sm">{formatTime(currentTime) || "--:--"}</span>
-              <span className="text-sm">{duration ? formatTime(duration) : "--:--"}</span>
+              <span className="text-sm">
+                {formatTime(currentTime) || "--:--"}
+              </span>
+              <span className="text-sm">
+                {duration ? formatTime(duration) : "--:--"}
+              </span>
             </div>
             <input
               type="range"
@@ -121,7 +140,11 @@ const MiniAudioControl = React.memo(() => {
                 className="text-white rounded py-2 px-4"
                 onClick={toggleFavorite}
               >
-                {isFavorite ? <StarFilled className="text-3xl text-yellow-500" /> : <StarOutlined className="text-3xl text-white" />}
+                {isFavorite ? (
+                  <StarFilled className="text-3xl text-yellow-500" />
+                ) : (
+                  <StarOutlined className="text-3xl text-white" />
+                )}
               </button>
               <button
                 className="text-white rounded py-2 px-4"
@@ -133,7 +156,11 @@ const MiniAudioControl = React.memo(() => {
                 className="text-white rounded py-2 px-4"
                 onClick={() => setIsPlaying(!isPlaying)}
               >
-                {!isPlaying ? <PlayCircleFilled className="text-3xl" /> : <PauseCircleFilled className="text-3xl" />}
+                {!isPlaying ? (
+                  <PlayCircleFilled className="text-3xl" />
+                ) : (
+                  <PauseCircleFilled className="text-3xl" />
+                )}
               </button>
               <button
                 className="text-white rounded py-2 px-4"
@@ -145,7 +172,11 @@ const MiniAudioControl = React.memo(() => {
                 className="text-white rounded py-2 px-4"
                 onClick={toggleRepeat}
               >
-                <RetweetOutlined className={`text-3xl ${isRepeating ? "text-green-500" : "text-white"}`} />
+                <RetweetOutlined
+                  className={`text-3xl ${
+                    isRepeating ? "text-green-500" : "text-white"
+                  }`}
+                />
               </button>
             </div>
           </div>

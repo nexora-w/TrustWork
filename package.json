@@ -1,12 +1,15 @@
 {
-  "name": "music-box",
+  "name": "trustwork",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network localhost"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
@@ -18,15 +21,24 @@
     "prop-types": "^15.8.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-h5-audio-player": "^3.9.3",
-    "react-particles": "^2.12.2",
     "react-redux": "^9.1.2",
     "react-toastify": "^10.0.6",
     "redux": "^5.0.1",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "ethers": "^6.8.1",
+    "web3": "^4.2.2",
+    "ipfs-http-client": "^60.0.1",
+    "web3.storage": "^5.0.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
+    "lucide-react": "^0.294.0"
   },
   "devDependencies": {
     "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.4",
+    "@openzeppelin/contracts": "^5.0.1"
   }
 }
